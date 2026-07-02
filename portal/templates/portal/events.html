@@ -1,0 +1,28 @@
+{% extends 'portal/base.html' %}
+{% block title %}Афиша{% endblock %}
+{% block content %}
+<h1>Афиша мероприятий</h1>
+<div class="row">
+    {% for event in events %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-img-container">
+                {% if event.image %}
+                    <img src="{{ event.image.url }}" alt="{{ event.name }}">
+                {% else %}
+                    <span class="no-image">Нет изображения</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ event.name }}</h5>
+                <p class="card-text">{{ event.description|truncatewords:20 }}</p>
+                <p><strong>{{ event.event_date|date:"d.m.Y" }} с {{ event.start_time|time:"H:i" }} до {{ event.end_time|time:"H:i" }}</strong></p>
+                <a href="{% url 'portal:reservation' %}?event={{ event.id }}" class="btn btn-gold">Забронировать стол</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>На данный момент мероприятий нет.</p>
+    {% endfor %}
+</div>
+{% endblock %}

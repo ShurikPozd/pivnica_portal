@@ -1,0 +1,19 @@
+{% extends 'portal/base.html' %}
+{% block title %}Сканы меню{% endblock %}
+{% block content %}
+<h1>Наше меню (оригинал)</h1>
+<div class="row">
+    {% for page in pages %}
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <img src="{{ page.image.url }}" class="card-img-top" style="height: auto; max-width: 100%;" alt="{{ page.title }}">
+            <div class="card-body">
+                <p class="card-text">{{ page.title }}</p>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>Изображения меню пока не загружены. Добавьте их через админ-панель.</p>
+    {% endfor %}
+</div>
+{% endblock %}

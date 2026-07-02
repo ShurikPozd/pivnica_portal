@@ -1,0 +1,7 @@
+{% extends 'portal/base.html' %}
+{% block title %}Бронь принята{% endblock %}
+{% block content %}
+<h1>Спасибо!</h1>
+<p>Ваша бронь принята. Мы свяжемся с вами для подтверждения в ближайшее время.</p>
+<a href="{% url 'portal:index' %}" class="btn btn-gold">На главную</a>
+{% endblock %}

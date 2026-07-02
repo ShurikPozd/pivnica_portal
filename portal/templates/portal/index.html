@@ -1,0 +1,36 @@
+{% extends 'portal/base.html' %}
+{% block title %}Главная - Пивница{% endblock %}
+{% block content %}
+<div class="jumbotron bg-light p-5 rounded mb-4">
+    <h1 class="display-4">Добро пожаловать в «Пивницу»!</h1>
+    <p class="lead">Лучшее разливное пиво, домашняя кухня и уютная атмосфера.</p>
+    <hr class="my-4">
+    <p>Акция: каждый понедельник скидка 20% на всё пиво с 18:00 до 20:00.</p>
+    <a class="btn btn-gold btn-lg" href="{% url 'portal:menu' %}" role="button">Смотреть меню</a>
+</div>
+
+<h2>Ближайшие мероприятия</h2>
+<div class="row">
+    {% for event in events %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <!-- Используем тот же контейнер, что и на странице афиши -->
+            <div class="card-img-container">
+                {% if event.image %}
+                    <img src="{{ event.image.url }}" alt="{{ event.name }}">
+                {% else %}
+                    <span class="no-image">Нет изображения</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ event.name }}</h5>
+                <p class="card-text">{{ event.event_date|date:"d.m.Y" }} в {{ event.start_time|time:"H:i" }}</p>
+                <a href="{% url 'portal:reservation' %}?event={{ event.id }}" class="btn btn-gold">Забронировать</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>Пока нет запланированных мероприятий. Загляните позже!</p>
+    {% endfor %}
+</div>
+{% endblock %}

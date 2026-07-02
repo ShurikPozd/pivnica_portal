@@ -1,0 +1,111 @@
+{% extends 'portal/base.html' %}
+{% block title %}Бронирование{% endblock %}
+{% block content %}
+<h1>Бронирование стола</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-gold">Отправить бронь</button>
+        </form>
+    </div>
+    <div class="col-md-4">
+        <div id="event-info" class="card">
+            {% if selected_event %}
+                <div class="card-header">{{ selected_event.name }}</div>
+                {% if selected_event.image %}
+                    <img src="{{ selected_event.image.url }}" class="card-img-top" alt="{{ selected_event.name }}" style="width: 100%; height: auto;">
+                {% endif %}
+                <div class="card-body">
+                    <p>{{ selected_event.description|truncatewords:30 }}</p>
+                    <p><strong>Дата:</strong> {{ selected_event.event_date|date:"d.m.Y" }}</p>
+                    <p><strong>Время:</strong> {{ selected_event.start_time|time:"H:i" }} – {{ selected_event.end_time|time:"H:i" }}</p>
+                </div>
+            {% else %}
+                <div class="card-body">
+                    <p class="text-muted">Выберите мероприятие, чтобы увидеть информацию о нём.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const eventSelect = document.querySelector('select[name="event"]');
+    const dateField = document.querySelector('input[name="reservation_date"]');
+    const timeField = document.querySelector('input[name="reservation_time"]');
+    const eventInfoDiv = document.getElementById('event-info');
+
+    if (!eventSelect || !dateField || !timeField) return;
+
+    function updateDateTimeAndInfo() {
+        const eventId = eventSelect.value;
+        if (eventId) {
+            dateField.readOnly = true;
+            fetch(`/api/event-date/${eventId}/`)
+                .then(response => response.json())
+                .then(data => { if (data.date) dateField.value = data.date; })
+                .catch(console.error);
+
+            fetch(`/api/event-times/${eventId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.start_time && data.end_time) {
+                        timeField.min = data.start_time;
+                        let [endHour, endMin] = data.end_time.split(':').map(Number);
+                        let maxHour = endHour - 1;
+                        if (maxHour < 0) maxHour = 0;
+                        let maxTime = `${maxHour.toString().padStart(2,'0')}:${endMin.toString().padStart(2,'0')}`;
+                        timeField.max = maxTime;
+                        const current = timeField.value;
+                        if (!current || current < data.start_time || current > maxTime) {
+                            timeField.value = data.start_time;
+                        }
+                    } else {
+                        timeField.min = '';
+                        timeField.max = '';
+                    }
+                })
+                .catch(console.error);
+
+            fetch(`/api/event-detail/${eventId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        eventInfoDiv.innerHTML = '<div class="card-body"><p class="text-danger">Ошибка загрузки мероприятия.</p></div>';
+                        return;
+                    }
+                    let imageHtml = '';
+                    if (data.image_url) {
+                        imageHtml = `<img src="${data.image_url}" class="card-img-top" alt="${data.name}" style="width: 100%; height: auto;">`;
+                    }
+                    eventInfoDiv.innerHTML = `
+                        <div class="card-header">${data.name}</div>
+                        ${imageHtml}
+                        <div class="card-body">
+                            <p>${data.description}</p>
+                            <p><strong>Дата:</strong> ${data.event_date}</p>
+                            <p><strong>Время:</strong> ${data.start_time} – ${data.end_time}</p>
+                        </div>
+                    `;
+                })
+                .catch(() => {
+                    eventInfoDiv.innerHTML = '<div class="card-body"><p class="text-danger">Ошибка загрузки мероприятия.</p></div>';
+                });
+        } else {
+            dateField.readOnly = false;
+            dateField.value = '';
+            timeField.min = '';
+            timeField.max = '';
+            eventInfoDiv.innerHTML = '<div class="card-body"><p class="text-muted">Выберите мероприятие, чтобы увидеть информацию о нём.</p></div>';
+        }
+    }
+
+    eventSelect.addEventListener('change', updateDateTimeAndInfo);
+    updateDateTimeAndInfo();
+});
+</script>
+{% endblock %}

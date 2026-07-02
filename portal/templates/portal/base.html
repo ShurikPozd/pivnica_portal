@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Пивница{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+    body { background-color: #f8f5f0; }
+    .navbar { background-color: #4a2c1a; }
+    /* Цвет для логотипа и ссылок в шапке */
+    .navbar-brand, .navbar .nav-link {
+        color: #f8f5f0 !important;
+    }
+    .navbar .nav-link:hover {
+        color: #d4a017 !important;
+    }
+    /* Кнопки золотистые */
+    .btn-gold { 
+    background-color: #d4a017; 
+    color: #4a2c1a; 
+    }
+    .btn-gold:hover {
+        background-color: #b8860b;
+        color: #f8f5f0;
+        transition: 0.3s;
+    }
+    /* Стили для вкладок категорий меню */
+    .nav-tabs .nav-link {
+        color: #4a2c1a;                /* цвет текста неактивной вкладки */
+        background-color: #f8f5f0;     /* фон неактивной вкладки */
+        border: 1px solid #d4a017;
+    }
+
+    .nav-tabs .nav-link:hover {
+        color: #d4a017;                /* цвет текста при наведении */
+        background-color: #4a2c1a;     /* фон при наведении */
+        border-color: #4a2c1a;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #f8f5f0;                /* цвет текста активной вкладки */
+        background-color: #d4a017;     /* фон активной вкладки (золотистый) */
+        border-color: #d4a017;
+    }
+    .card-title { color: #4a2c1a; }
+    footer { background-color: #4a2c1a; color: #f8f5f0; padding: 20px; margin-top: 40px; }
+    /* Растягиваем body на весь экран и заставляем подвал прилипать снизу */
+    html, body {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Контейнер с основным контентом забирает всё свободное пространство */
+    .container.mt-4 {
+        flex: 1;
+    }
+
+    /* Подвал остаётся внизу */
+    footer {
+        margin-top: auto;
+    }
+
+    /* ---- НОВЫЕ СТИЛИ ДЛЯ ИЗОБРАЖЕНИЙ В КАРТОЧКАХ ---- */
+    .card-img-container {
+        height: 600px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f0ece6;  /* нейтральный фон для пустого места */
+    }
+    .card-img-container img {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;  /* сохраняет пропорции, не обрезает */
+    }
+    .card-img-container .no-image {
+        color: #999;
+        font-size: 14px;
+        font-style: italic;
+    }
+</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'portal:index' %}">
+            {% load static %}
+            <img src="{% static 'portal/images/logo.png' %}" alt="Пивница" style="height: 40px; width: auto;">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'portal:menu' %}">Меню</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'portal:paper_menu' %}">Сканы меню</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'portal:events' %}">Афиша</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'portal:reservation' %}">Бронирование</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <div class="container mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        <div class="container text-center">
+            <p> г. Москва, Профсоюзная ул., д. 61а |  +7 (925) 072-53-22 |  12:00 – 23:00</p>
+            <p>&copy; 2026 Бар-ресторан «Пивница»</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
