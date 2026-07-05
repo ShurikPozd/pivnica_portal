@@ -1,39 +1,42 @@
-# Python
-__pycache__/
-*.py[cod]
-*.so
-.Python
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Django
-*.log
+# База данных
 db.sqlite3
 db.sqlite3-journal
-/media/
-/static/
-/staticfiles/
+
+# Медиа-файлы (загруженные пользователями)
+media/
+staticfiles/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+
+# Виртуальное окружение
+venv/
+env/
+.venv/
+ENV/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 .DS_Store
-Thumbs.db
 
-# Миграции (опционально – лучше не игнорировать, но можно)
-# **/migrations/*.py
-# !**/migrations/__init__.py
+# Переменные окружения
+.env
+.env.local
+.env.*.local
 
-# Прочее
-*.pyc
-*.pyo
-*.pyd
-*.egg-info/
-dist/
-build/
+# Секретные ключи
+SECRET_KEY
+*.pem
