@@ -5,6 +5,63 @@ from .models import Category, Dish, Event, Customer, Reservation, PaperMenu
 from .forms import ReservationForm
 import datetime
 from datetime import timedelta
+from ml.recommender import DishRecommender
+
+def recommend_dishes(request, customer_id=None):
+    """
+    API для получения рекомендаций блюд.
+    """
+    try:
+        # Загружаем модель
+        recommender = DishRecommender.load('ml/models/recommender.pkl')
+        
+        # Если передан customer_id — ищем его историю
+        if customer_id:
+            try:
+                customer = Customer.objects.get(id=customer_id)
+                # Получаем последнее бронирование клиента
+                last_reservation = Reservation.objects.filter(customer=customer).last()
+                if last_reservation:
+                    # TODO: связать бронирование с блюдами
+                    pass
+            except Customer.DoesNotExist:
+                return JsonResponse({'error': 'Клиент не найден'}, status=404)
+        
+        # Берём случайное блюдо для демонстрации
+        import random
+        dishes = Dish.objects.filter(is_available=True)
+        if not dishes:
+            return JsonResponse({'error': 'Нет доступных блюд'}, status=404)
+        
+        random_dish = random.choice(dishes)
+        recommendations = recommender.recommend(random_dish.id, n=5)
+        
+        return JsonResponse({
+            'success': True,
+            'based_on': random_dish.name,
+            'recommendations': recommendations
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+def get_popular_dishes(request):
+    """
+    API для получения популярных блюд.
+    """
+    # Простая заглушка: возвращаем случайные блюда
+    import random
+    dishes = Dish.objects.filter(is_available=True)
+    popular = random.sample(list(dishes), min(5, len(dishes)))
+    
+    data = [{
+        'id': d.id,
+        'name': d.name,
+        'price': float(d.price),
+    } for d in popular]
+    
+    return JsonResponse({'popular': data})
 
 def index(request):
     events = Event.objects.filter(is_active=True, event_date__gte=datetime.date.today()).order_by('event_date')[:3]

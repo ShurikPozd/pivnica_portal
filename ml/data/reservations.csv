@@ -1,0 +1,10 @@
+id,customer_id,event_id,reservation_date,guests_count,status
+3,1,1.0,2026-10-31,6,pending
+8,2,1.0,2026-10-31,2,confirmed
+5,1,,2026-09-10,2,pending
+7,1,,2026-09-10,2,pending
+4,1,,2026-08-11,3,pending
+9,1,,2026-07-07,2,pending
+1,1,,2026-07-03,8,pending
+6,1,,2026-07-03,1,pending
+2,1,,2026-07-03,8,pending

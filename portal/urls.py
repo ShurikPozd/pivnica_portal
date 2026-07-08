@@ -12,4 +12,7 @@ urlpatterns = [
     path('api/event-times/<int:event_id>/', views.event_times, name='event_times'),
     path('paper-menu/', views.paper_menu, name='paper_menu'),
     path('api/event-detail/<int:event_id>/', views.event_detail_api, name='event_detail_api'),
+    path('api/recommend/', views.recommend_dishes, name='recommend'),
+    path('api/recommend/<int:customer_id>/', views.recommend_dishes, name='recommend_for_customer'),
+    path('api/popular/', views.get_popular_dishes, name='popular'),
 ]
