@@ -98,6 +98,24 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <span class="nav-link">👋 {{ user.username }}</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'portal:profile' %}">Профиль</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'portal:logout' %}">Выйти</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'portal:login' %}">Войти</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'portal:register' %}">Регистрация</a>
+                    </li>
+                {% endif %}
                 <li class="nav-item"><a class="nav-link" href="{% url 'portal:menu' %}">Меню</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'portal:paper_menu' %}">Сканы меню</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'portal:events' %}">Афиша</a></li>

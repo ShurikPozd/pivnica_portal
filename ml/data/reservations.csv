@@ -1,6 +1,5 @@
 id,customer_id,event_id,reservation_date,guests_count,status
 3,1,1.0,2026-10-31,6,pending
-8,2,1.0,2026-10-31,2,confirmed
 5,1,,2026-09-10,2,pending
 7,1,,2026-09-10,2,pending
 4,1,,2026-08-11,3,pending

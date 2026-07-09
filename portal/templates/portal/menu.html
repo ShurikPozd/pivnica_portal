@@ -1,51 +1,279 @@
 {% extends 'portal/base.html' %}
+{% load static %}
 {% block title %}Меню{% endblock %}
 {% block content %}
-<h1 class="mb-4">Наше меню</h1>
+<h1>Наше меню</h1>
 
-<ul class="nav nav-tabs nav-fill" id="menuTab" role="tablist">
-    {% for cat in categories %}
+<!-- ============================================================ -->
+<!-- БЛОК РЕКОМЕНДАЦИЙ -->
+<!-- ============================================================ -->
+{% if user.is_authenticated %}
+<div class="mb-5 p-4 bg-light rounded-3" id="recommendations-block">
+    <h3>🍽️ Рекомендуем вам</h3>
+    
+    <ul class="nav nav-tabs" id="recTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#rec-popular" type="button">
+                🔥 Популярное
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#rec-season" type="button">
+                🌿 Сезонное
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#rec-personal" type="button">
+                👤 Для вас
+            </button>
+        </li>
+    </ul>
+    
+    <div class="tab-content mt-3">
+        <div class="tab-pane fade show active" id="rec-popular">
+            <div id="popular-container" class="row">
+                <div class="col-12 text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Загрузка...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-pane fade" id="rec-season">
+            <div id="season-container" class="row">
+                <div class="col-12 text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Загрузка...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-pane fade" id="rec-personal">
+            <div id="personal-container" class="row">
+                <div class="col-12 text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Загрузка...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- ============================================================ -->
+<!-- ВКЛАДКИ КАТЕГОРИЙ -->
+<!-- ============================================================ -->
+<ul class="nav nav-tabs nav-fill" id="menuTabs" role="tablist">
     <li class="nav-item" role="presentation">
-        <button class="nav-link {% if forloop.first %}active{% endif %}" 
-                data-bs-toggle="tab" 
-                data-bs-target="#cat{{ cat.id }}" 
-                type="button" 
-                role="tab">{{ cat.name }}</button>
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#all" type="button">
+            Все
+        </button>
+    </li>
+    {% for category in categories %}
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#cat{{ category.id }}" type="button">
+            {{ category.name }}
+        </button>
     </li>
     {% endfor %}
 </ul>
 
-<div class="tab-content mt-3">
-    {% for cat in categories %}
-    <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="cat{{ cat.id }}" role="tabpanel">
+<!-- ============================================================ -->
+<!-- БЛЮДА -->
+<!-- ============================================================ -->
+<div class="tab-content mt-4">
+    <!-- Все блюда -->
+    <div class="tab-pane fade show active" id="all">
         <div class="row">
             {% for dish in dishes %}
-                {% if dish.category.id == cat.id %}
-                <div class="col-md-4">
-                    <div class="card mb-3">
-                        <!-- Фиксированный контейнер для изображения/заглушки -->
-                        <div class="card-img-top" style="height: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                            {% if dish.image and dish.image.url %}
-                                <img src="{{ dish.image.url }}" style="object-fit: cover; width: 100%; height: 100%;" alt="{{ dish.name }}">
-                            {% else %}
-                                <div style="background-color: #d4a017; color: #4a2c1a; font-weight: bold; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center;">
-                                    {{ dish.name|truncatechars:30 }}
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title">{{ dish.name }}</h5>
-                            <p class="card-text">{{ dish.description|truncatewords:15 }}</p>
-                            <p class="card-text"><strong>{{ dish.weight }} г</strong> | <strong>{{ dish.price }} руб.</strong></p>
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card h-100 d-flex flex-column">
+                    <div class="card-img-top-wrapper" style="height: 200px; overflow: hidden; background-color: #f0ece6;">
+                        {% if dish.image %}
+                            <img src="{{ dish.image.url }}" alt="{{ dish.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            <div class="d-flex align-items-center justify-content-center h-100 text-muted" style="font-style: italic;">
+                                Нет фото
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-body d-flex flex-column flex-grow-1">
+                        <h5 class="card-title">{{ dish.name }}</h5>
+                        <p class="card-text flex-grow-1">{{ dish.description|truncatewords:12 }}</p>
+                        <div class="mt-auto">
+                            <p class="mb-1"><strong>{{ dish.price }} руб.</strong></p>
+                            <small class="text-muted">{{ dish.weight }}г</small>
                         </div>
                     </div>
                 </div>
-                {% endif %}
+            </div>
             {% empty %}
-                <p>В этой категории пока нет блюд.</p>
+            <div class="col-12">
+                <p>Блюда не найдены</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Блюда по категориям -->
+    {% for category in categories %}
+    <div class="tab-pane fade" id="cat{{ category.id }}">
+        <div class="row">
+            {% for dish in category.dish_set.all %}
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card h-100 d-flex flex-column">
+                    <div class="card-img-top-wrapper" style="height: 200px; overflow: hidden; background-color: #f0ece6;">
+                        {% if dish.image %}
+                            <img src="{{ dish.image.url }}" alt="{{ dish.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            <div class="d-flex align-items-center justify-content-center h-100 text-muted" style="font-style: italic;">
+                                Нет фото
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-body d-flex flex-column flex-grow-1">
+                        <h5 class="card-title">{{ dish.name }}</h5>
+                        <p class="card-text flex-grow-1">{{ dish.description|truncatewords:12 }}</p>
+                        <div class="mt-auto">
+                            <p class="mb-1"><strong>{{ dish.price }} руб.</strong></p>
+                            <small class="text-muted">{{ dish.weight }}г</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p>В этой категории пока нет блюд</p>
+            </div>
             {% endfor %}
         </div>
     </div>
     {% endfor %}
 </div>
+
+<style>
+.card {
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #e9ecef;
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+.card-img-top-wrapper {
+    height: 200px;
+    overflow: hidden;
+    background-color: #f8f5f0;
+}
+.card-img-top-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+.card:hover .card-img-top-wrapper img {
+    transform: scale(1.03);
+}
+.card-body {
+    padding: 1rem;
+}
+.card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #4a2c1a;
+}
+.card-text {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 0.75rem;
+}
+.nav-tabs .nav-link {
+    color: #4a2c1a;
+    background-color: #f8f5f0;
+    border: 1px solid #d4a017;
+}
+.nav-tabs .nav-link:hover {
+    color: #d4a017;
+    background-color: #4a2c1a;
+    border-color: #4a2c1a;
+}
+.nav-tabs .nav-link.active {
+    color: #f8f5f0;
+    background-color: #d4a017;
+    border-color: #d4a017;
+}
+.btn-gold {
+    background-color: #d4a017;
+    color: #4a2c1a;
+    border: none;
+    padding: 10px 30px;
+    font-weight: bold;
+}
+.btn-gold:hover {
+    background-color: #b8860b;
+    color: #fff;
+}
+.bg-light {
+    background-color: #f8f5f0 !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    {% if user.is_authenticated %}
+    const customerId = {{ user.customer.id }};
+    
+    function renderRecommendations(containerId, data) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+        
+        if (data && data.recommendations && data.recommendations.length > 0) {
+            let html = '';
+            data.recommendations.forEach(dish => {
+                html += `
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="card-title">${dish.name}</h6>
+                                <p class="card-text"><strong>${dish.price} руб.</strong></p>
+                                ${dish.similarity ? `<small class="text-muted">Похожесть: ${(dish.similarity * 100).toFixed(0)}%</small>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = `
+                <div class="col-12">
+                    <p class="text-muted">Рекомендации пока недоступны</p>
+                </div>
+            `;
+        }
+    }
+    
+    fetch('/api/popular/')
+        .then(response => response.json())
+        .then(data => renderRecommendations('popular-container', {recommendations: data.popular || []}))
+        .catch(() => renderRecommendations('popular-container', {recommendations: []}));
+    
+    fetch('/api/recommend/season/')
+        .then(response => response.json())
+        .then(data => renderRecommendations('season-container', data))
+        .catch(() => renderRecommendations('season-container', {recommendations: []}));
+    
+    fetch(`/api/recommend/customer/${customerId}/`)
+        .then(response => response.json())
+        .then(data => renderRecommendations('personal-container', data))
+        .catch(() => renderRecommendations('personal-container', {recommendations: []}));
+    {% endif %}
+});
+</script>
 {% endblock %}
